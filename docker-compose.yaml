@@ -1,0 +1,42 @@
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:16
+    restart: always
+    ports:
+      - "${DOCKER_DB_PORT}:5432"
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+  nginx:
+    container_name: 'nginx'
+    image: nginx:1.25.5-alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/web-server:/etc/nginx/conf.d
+  php:
+    container_name: 'php'
+    build:
+      context: ./docker/php
+      args:
+        UID: ${DOCKER_UID}
+        GID: ${DOCKER_GID}
+    volumes:
+      - ./:/var/www
+  nodejs:
+    container_name: 'node-js'
+    image: node:22
+    volumes:
+      - ./:/var/www
+    working_dir: /var/www
+    command: bash -c "npm install && npm run dev"
+    ports:
+      - '5137:5137'
+volumes:
+  postgres_data:
+    driver: local
