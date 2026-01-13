@@ -1,54 +1,90 @@
 @extends('layouts.app')
 
-@section('title','Пользователи')
+@section('title', 'Пользователи')
 
 @section('content')
-    <div class="container">
-        <div class="header mb-3">
-            <h2 class="text-primary fw-bold mb-3">Список пользователей</h2>
-            <a href="{{ route('users.create') }}" class="btn btn-primary text-white px-3 py-2 rounded">Добавить</a>
+    <link rel="stylesheet" href="{{ asset('css/black-table-styles.css') }}">
+
+    <div class="users-container">
+        <div class="users-header">
+            <h2 class="users-title">Список пользователей</h2>
+            <a href="{{ route('users.create') }}" class="btn-add">
+                <span class="btn-add-icon">+</span>
+                Добавить пользователя
+            </a>
         </div>
 
-        <div class="table-container bg-white shadow p-4 rounded">
-            <table class="table table-striped">
-                <thead class="bg-primary text-white">
+        <div class="table-wrapper">
+            <table class="users-table">
+                <thead>
                 <tr>
-                    <th>Номер</th>
+                    <th>ID</th>
                     <th>Имя</th>
+                    <th>Email</th>
                     <th>Роль</th>
+                    <th>Пароль</th>
                     <th>Действия</th>
                 </tr>
                 </thead>
                 <tbody>
                 @forelse ($users as $user)
                     <tr>
-                        <td>{{ $user->id }}</td>
-                        <td>{{ $user->name }}</td>
-                        <td>{{ $user->role }}</td>
-                        <td class="actions">
-                            <!-- Кнопка просмотра -->
-                            <a href="{{ route('users.show', $user) }}" class="btn btn-info btn-sm me-2">Показать</a>
+                        <td class="user-id">#{{ $user->id }}</td>
+                        <td class="user-name">
+                            <div class="user-name-content">
+                                <div class="user-avatar-small">
+                                    {{ strtoupper(substr($user->name, 0, 1)) }}
+                                </div>
+                                <span>{{ $user->name }}</span>
+                            </div>
+                        </td>
+                        <td class="user-email">{{ $user->email }}</td>
+                        <td class="user-role">
+                            <span class="role-badge">{{ $user->role }}</span>
+                        </td>
+                        <td class="user-password">
+                            <div class="password-display">
+                                <span class="password-mask">••••••••</span>
+                            </div>
+                        </td>
+                        <td class="user-actions">
+                            <div class="action-buttons">
+                                <!-- Только кнопка просмотра -->
+                                <a href="{{ route('users.show', $user) }}" class="btn-action btn-view">
+                                    <span class="btn-icon">👁</span>
+                                    Просмотр
+                                </a>
 
-                            <!-- Кнопка редактирования -->
-                            <a href="{{ route('users.edit', $user) }}" class="btn btn-warning btn-sm me-2">
-                                Редактировать
-                            </a>
-
-                            <!-- Форма для удаления -->
-                            <form action="{{ route('users.destroy', $user) }}" method="POST" class="d-inline" onsubmit="return confirm('Вы уверены?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
-                            </form>
+                                <!-- Форма для удаления -->
+                                <form action="{{ route('users.destroy', $user) }}" method="POST" class="delete-form">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn-action btn-delete" onclick="return confirmDelete()">
+                                        <span class="btn-icon">🗑️</span>
+                                        Удалить
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="text-center text-secondary">Нет пользователей в системе</td>
+                        <td colspan="6" class="no-users">
+                            <div class="no-users-content">
+                                <span class="no-users-icon">👤</span>
+                                <p>Нет пользователей в системе</p>
+                            </div>
+                        </td>
                     </tr>
                 @endforelse
                 </tbody>
             </table>
         </div>
+    </div>
 
+    <script>
+        function confirmDelete() {
+            return confirm('Вы уверены, что хотите удалить этого пользователя?');
+        }
+    </script>
 @endsection
