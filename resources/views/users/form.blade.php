@@ -2,305 +2,114 @@
     $user = $user ?? null;
 @endphp
 
-<link rel="stylesheet" href="{{ asset('css/black-form-styles.css') }}">
-
 <div class="form-wrapper">
-    <form method="POST" action="{{ route('users.store') }}" class="user-form">
+    <form method="POST" action="{{ $user ? route('users.update', $user) : route('users.store') }}">
         @csrf
+        @if($user)
+            @method('PUT')
+        @endif
 
-        <div class="form-header">
-            <h2>{{ $user ? 'Редактирование пользователя' : 'Создание нового пользователя' }}</h2>
-        </div>
+        <h2>{{ $user ? 'Редактирование пользователя' : 'Создание нового пользователя' }}</h2>
 
-        <div class="form-group">
-            <label for="role" class="form-label">Выберите роль</label>
-            <div class="select-wrapper">
-                <select name="role" id="role" class="form-select" required>
-                    <option value="">-- Выберите роль --</option>
+
+
+        <div style="margin-bottom: 15px;">
+            <label for="role" style="display: block; margin-bottom: 5px;">Роль *</label>
+            <select name="role" id="role" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" required>
+                <option value="">-- Выберите роль --</option>
+                @if(isset($roles) && is_array($roles))
                     @foreach($roles as $key => $value)
                         <option value="{{ $key }}" {{ old('role', $user?->role) == $key ? 'selected' : '' }}>
                             {{ $value }}
                         </option>
                     @endforeach
-                </select>
-                <div class="select-arrow">▼</div>
-            </div>
+                @else
+                    @foreach(App\Enums\UserRoleEnum::cases() as $role)
+                        <option value="{{ $role->value }}" {{ old('role', $user?->role?->value) == $role->value ? 'selected' : '' }}>
+                            {{ $role->label() }}
+                        </option>
+                    @endforeach
+                @endif
+            </select>
         </div>
 
-        <div class="form-group">
-            <label for="name" class="form-label">Имя *</label>
+        <div style="margin-bottom: 15px;">
+            <label for="name" style="display: block; margin-bottom: 5px;">Имя *</label>
             <input value="{{ old('name', $user?->name) }}"
                    type="text"
-                   class="form-input"
                    id="name"
                    name="name"
-                   placeholder="Введите имя пользователя"
+                   placeholder="Введите имя"
+                   style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"
                    required>
+            @error('name')
+            <div style="color: #dc3545; font-size: 14px; margin-top: 5px;">{{ $message }}</div>
+            @enderror
         </div>
 
-        <div class="form-group">
-            <label for="email" class="form-label">Email *</label>
+        <div style="margin-bottom: 15px;">
+            <label for="email" style="display: block; margin-bottom: 5px;">Email *</label>
             <input value="{{ old('email', $user?->email) }}"
                    type="email"
-                   class="form-input"
                    id="email"
                    name="email"
                    placeholder="example@mail.com"
+                   style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"
                    required>
+            @error('email')
+            <div style="color: #dc3545; font-size: 14px; margin-top: 5px;">{{ $message }}</div>
+            @enderror
         </div>
 
-        <div class="form-group">
-            <label for="password" class="form-label">Пароль {{ $user ? '(оставьте пустым, чтобы не менять)' : '*' }}</label>
-            <div class="password-wrapper">
-                <input type="password"
-                       class="form-input"
-                       id="password"
-                       name="password"
-                       placeholder="Введите пароль"
-                    {{ $user ? '' : 'required' }}>
-                <button type="button" class="password-toggle" onclick="togglePassword()">
-                    👁
-                </button>
-            </div>
+        <div style="margin-bottom: 20px;">
+            <label for="password" style="display: block; margin-bottom: 5px;">
+                Пароль {{ $user ? '(оставьте пустым, чтобы не менять)' : '*' }}
+            </label>
+            <input type="password"
+                   id="password"
+                   name="password"
+                   placeholder="Введите пароль"
+                   style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"
+                {{ $user ? '' : 'required' }}>
+            @error('password')
+            <div style="color: #dc3545; font-size: 14px; margin-top: 5px;">{{ $message }}</div>
+            @enderror
         </div>
 
-        <div class="form-actions">
-            <button type="submit" class="btn-submit">
-                <span class="btn-icon">✓</span>
-                Сохранить
+        <div style="display: flex; gap: 10px;">
+            <button type="submit" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                {{ $user ? 'Обновить' : 'Создать' }}
             </button>
-            <a href="{{ url()->previous() }}" class="btn-cancel">
+            <a href="{{ url()->previous() ?: route('users.index') }}" style="padding: 10px 20px; background: #6c757d; color: white; text-decoration: none; border-radius: 4px;">
                 Отмена
             </a>
         </div>
     </form>
 </div>
 
-<script>
-    function togglePassword() {
-        const passwordInput = document.getElementById('password');
-        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput.setAttribute('type', type);
-    }
-</script>
 <style>
-    /* Основные стили формы */
     .form-wrapper {
-        max-width: 600px;
-        margin: 0 auto;
-        padding: 30px 20px;
-        background-color: #000;
-        min-height: 100vh;
+        max-width: 500px;
+        margin: 40px auto;
+        padding: 20px;
     }
 
-    .user-form {
-        background: #111;
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        border: 1px solid #333;
+    h2 {
+        margin-bottom: 20px;
+        color: #333;
     }
 
-    /* Заголовок формы */
-    .form-header {
-        text-align: center;
-        margin-bottom: 30px;
-        padding-bottom: 20px;
-        border-bottom: 1px solid #333;
-    }
-
-    .form-header h2 {
-        color: #fff;
-        font-size: 24px;
-        font-weight: 600;
-        margin: 0;
-    }
-
-    /* Группы формы */
-    .form-group {
-        margin-bottom: 25px;
-    }
-
-    .form-label {
-        display: block;
-        color: #ccc;
-        font-size: 14px;
-        font-weight: 500;
-        margin-bottom: 8px;
-    }
-
-    .form-input {
-        width: 100%;
-        padding: 12px 16px;
-        background: #1a1a1a;
-        border: 1px solid #333;
-        border-radius: 6px;
-        color: #fff;
-        font-size: 15px;
-        transition: all 0.3s;
-    }
-
-    .form-input:focus {
+    input:focus, select:focus {
         outline: none;
-        border-color: #555;
-        box-shadow: 0 0 0 2px rgba(85, 85, 85, 0.1);
+        border-color: #007bff;
+        box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
     }
 
-    .form-input::placeholder {
-        color: #666;
+    button:hover {
+        background: #0056b3 !important;
     }
 
-    /* Стили для select */
-    .select-wrapper {
-        position: relative;
-    }
-
-    .form-select {
-        width: 100%;
-        padding: 12px 40px 12px 16px;
-        background: #1a1a1a;
-        border: 1px solid #333;
-        border-radius: 6px;
-        color: #fff;
-        font-size: 15px;
-        appearance: none;
-        cursor: pointer;
-    }
-
-    .select-arrow {
-        position: absolute;
-        right: 16px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #666;
-        pointer-events: none;
-    }
-
-    .form-select:focus {
-        outline: none;
-        border-color: #555;
-        box-shadow: 0 0 0 2px rgba(85, 85, 85, 0.1);
-    }
-
-    /* Поле пароля с кнопкой показа */
-    .password-wrapper {
-        position: relative;
-    }
-
-    .password-toggle {
-        position: absolute;
-        right: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: none;
-        border: none;
-        color: #666;
-        cursor: pointer;
-        padding: 4px;
-        font-size: 18px;
-        transition: color 0.3s;
-    }
-
-    .password-toggle:hover {
-        color: #fff;
-    }
-
-    /* Кнопки формы */
-    .form-actions {
-        display: flex;
-        gap: 15px;
-        margin-top: 30px;
-        padding-top: 20px;
-        border-top: 1px solid #333;
-    }
-
-    .btn-submit {
-        flex: 1;
-        padding: 14px 24px;
-        background: linear-gradient(135deg, #222 0%, #111 100%);
-        border: 1px solid #444;
-        border-radius: 6px;
-        color: #fff;
-        font-size: 16px;
-        font-weight: 500;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        transition: all 0.3s;
-    }
-
-    .btn-submit:hover {
-        background: linear-gradient(135deg, #333 0%, #222 100%);
-        border-color: #555;
-    }
-
-    .btn-icon {
-        font-size: 18px;
-    }
-
-    .btn-cancel {
-        padding: 14px 24px;
-        background: #1a1a1a;
-        border: 1px solid #333;
-        border-radius: 6px;
-        color: #ccc;
-        text-decoration: none;
-        font-size: 16px;
-        font-weight: 500;
-        text-align: center;
-        transition: all 0.3s;
-    }
-
-    .btn-cancel:hover {
-        background: #222;
-        color: #fff;
-        border-color: #444;
-    }
-
-    /* Валидация и состояния */
-    .form-input:invalid:not(:focus):not(:placeholder-shown) {
-        border-color: #722;
-    }
-
-    .form-input:valid:not(:focus):not(:placeholder-shown) {
-        border-color: #272;
-    }
-
-    /* Адаптивность */
-    @media (max-width: 640px) {
-        .form-wrapper {
-            padding: 20px 15px;
-        }
-
-        .user-form {
-            padding: 25px 20px;
-        }
-
-        .form-header h2 {
-            font-size: 20px;
-        }
-
-        .form-actions {
-            flex-direction: column;
-        }
-
-        .btn-submit,
-        .btn-cancel {
-            width: 100%;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .form-header h2 {
-            font-size: 18px;
-        }
-
-        .form-input,
-        .form-select {
-            padding: 10px 14px;
-            font-size: 14px;
-        }
+    a:hover {
+        background: #545b62 !important;
     }
 </style>
