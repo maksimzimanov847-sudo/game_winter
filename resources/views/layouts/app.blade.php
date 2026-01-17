@@ -28,9 +28,9 @@
             @endisset
 
             <!-- Page Content -->
-            <main>
+            < <main>
                 @if(isset($slot))
-                    {{ $slot }}
+                    {{$slot}}
                 @endif
                 @yield('content')
             </main>

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Article extends Model
 {
@@ -120,4 +121,9 @@ class Article extends Model
         $this->rating = max(0, $this->rating - $decrement);
         return $this->save();
     }
+
+public function reviews(): HasMany
+{
+    return $this->hasMany(Review::class);
+}
 }

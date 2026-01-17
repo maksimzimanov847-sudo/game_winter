@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Review extends Model
@@ -209,4 +210,9 @@ class Review extends Model
             'rating_icon' => $this->getRatingIcon(),
         ];
     }
+
+public function article(): HasMany
+{
+    return $this->hasMany(Article::class);
+}
 }

@@ -25,7 +25,7 @@
                     </x-nav-link>
 
                     <x-nav-link :href="route('reviews.index')" :active="request()->routeIs('reviews')">
-                        {{ __('title',) }}
+                        {{ __('Отзывы',) }}
                     </x-nav-link>
                 </div>
             </div>

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ArticlerticleController;
+use App\Http\Controllers\GameController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -9,15 +10,13 @@ use App\Http\Controllers\ReviewsController;
 
 
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
 
 
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
-
+Route::get('/', [GameController::class, 'index'])->name('game.index');
 Route::post('/articles/{article}/increment-rating', [ArticlerticleController::class, 'incrementRating'])
     ->name('articles.incrementRating');
 Route::post('/articles/{article}/decrement-rating', [ArticlerticleController::class, 'decrementRating'])
