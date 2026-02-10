@@ -3,7 +3,7 @@
         <div class="flex justify-between items-center h-16">
             <div class="flex items-center">
                 <a href="#" class="flex items-center text-white text-2xl font-bold">
-                    <span class="mr-2">Зиманушка</span>
+                    <span class="mr-2">Game zone</span>
                 </a>
             </div>
 
