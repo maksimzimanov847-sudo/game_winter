@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class GameController extends Controller
@@ -12,7 +11,8 @@ class GameController extends Controller
     {
         $articles = Article::withCount('reviews')
             ->with('reviews')
-            ->orderBy('created_at', 'desc');
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
 
         return view('game.index', compact('articles'));
     }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreReviewRequest;
 use App\Http\Requests\UpdateReviewRequest;
+use App\Models\Article;
 use App\Models\Review;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -15,7 +16,10 @@ class ReviewsController extends Controller
      */
     public function index(): View
     {
-        $reviews = Review::latest()->paginate(10);
+        $reviews = Review::with(['user', 'article'])
+            ->latest()
+            ->paginate(10);
+
         return view('reviews.index', compact('reviews'));
     }
 
@@ -24,7 +28,9 @@ class ReviewsController extends Controller
      */
     public function create(): View
     {
-        return view('reviews.create');
+        // Передаём список статей для выпадающего списка
+        $articles = Article::all();
+        return view('reviews.create', compact('articles'));
     }
 
     /**
@@ -32,7 +38,9 @@ class ReviewsController extends Controller
      */
     public function store(StoreReviewRequest $request): RedirectResponse
     {
-        Review::create($request->validated());
+        Review::create($request->validated() + [
+                'user_id' => $request->user()->id,
+            ]);
 
         return redirect()->route('reviews.index')
             ->with('success', 'Отзыв успешно добавлен!');
@@ -43,6 +51,7 @@ class ReviewsController extends Controller
      */
     public function show(Review $review): View
     {
+        $review->load(['user', 'article']);
         return view('reviews.show', compact('review'));
     }
 
@@ -51,7 +60,10 @@ class ReviewsController extends Controller
      */
     public function edit(Review $review): View
     {
-        return view('reviews.edit', compact('review'));
+        $this->authorize('update', $review); // если используете Policy
+
+        $articles = Article::all();
+        return view('reviews.edit', compact('review', 'articles'));
     }
 
     /**
@@ -62,7 +74,7 @@ class ReviewsController extends Controller
         $review->update($request->validated());
 
         return redirect()->route('reviews.index')
-            ->with('success', 'Отзыв успешно обновлен!');
+            ->with('success', 'Отзыв успешно обновлён!');
     }
 
     /**
@@ -70,8 +82,11 @@ class ReviewsController extends Controller
      */
     public function destroy(Review $review): RedirectResponse
     {
+        $this->authorize('delete', $review);
+
         $review->delete();
+
         return redirect()->route('reviews.index')
-            ->with('success', 'Отзыв успешно удален!');
+            ->with('success', 'Отзыв успешно удалён!');
     }
 }
