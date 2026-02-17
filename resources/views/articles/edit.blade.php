@@ -12,7 +12,7 @@
             <h1>Редактирование статьи</h1>
         </div>
 
-        <form method="POST" action="{{ route('articles.update', $article) }}" class="article-form">
+        <form method="POST" action="{{ route('articles.update', $article) }}" class="article-form" enctype="multipart/form-data">
             @csrf
             @method('PUT')
 
@@ -25,7 +25,7 @@
                        name="title"
                        placeholder="Введите название статьи"
                        required
-                       maxlength="15000">
+                       maxlength="150">
                 @error('title')
                 <span class="error-message">{{ $message }}</span>
                 @enderror
@@ -75,6 +75,38 @@
                 @enderror
             </div>
 
+            {{-- Блок текущего изображения --}}
+            @if($article->mainPhoto)
+                <div class="form-group">
+                    <label class="form-label">Текущее изображение</label>
+                    <div class="current-photo">
+                        <img src="{{ $article->mainPhoto->thumbnail_url }}" alt="Превью" class="photo-preview">
+                        <div class="photo-info">
+                            <span class="photo-name">{{ $article->mainPhoto->original_name }}</span>
+                            <span class="photo-size">{{ round($article->mainPhoto->size / 1024, 2) }} KB</span>
+                        </div>
+                    </div>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="delete_photo" value="1" class="checkbox-input">
+                        <span>Удалить текущее изображение</span>
+                    </label>
+                </div>
+            @endif
+
+            {{-- Загрузка нового изображения --}}
+            <div class="form-group">
+                <label for="photo" class="form-label">Новое изображение (необязательно)</label>
+                <input type="file"
+                       class="form-input"
+                       id="photo"
+                       name="photo"
+                       accept="image/jpeg,image/png,image/webp">
+                <small class="form-text text-gray-400">Допустимые форматы: jpeg, jpg, png, webp. Максимальный размер: 5 МБ.</small>
+                @error('photo')
+                <span class="error-message">{{ $message }}</span>
+                @enderror
+            </div>
+
             <div class="form-actions">
                 <button type="submit" class="btn-submit">
                     <span class="btn-icon">✓</span>
@@ -104,24 +136,16 @@
             --dark-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
+        /* копируем стили из create.blade.php и добавляем новые */
+
         .form-container {
             max-width: 800px;
-            margin: 0 auto;
-            padding: 2rem;
-            background-color: var(--dark-bg);
-            min-height: 100vh;
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            margin: 2rem auto;
+            padding: 0 1rem;
+            min-height: calc(100vh - 4rem);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--dark-bg);
+            color: var(--dark-text);
         }
 
         .form-header {
@@ -136,7 +160,7 @@
             position: absolute;
             bottom: -2px;
             left: 0;
-            width: 100px;
+            width: 60px;
             height: 3px;
             background: var(--dark-gradient);
             border-radius: 2px;
@@ -145,29 +169,29 @@
         .btn-back {
             display: inline-flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.5rem;
             color: var(--dark-text-secondary);
             text-decoration: none;
-            margin-bottom: 1.5rem;
-            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
             background: rgba(30, 41, 59, 0.5);
             border: 1px solid var(--dark-border);
-            border-radius: 10px;
-            font-weight: 500;
             transition: all 0.3s ease;
-            width: fit-content;
+            font-weight: 500;
         }
 
         .btn-back:hover {
             color: var(--dark-text);
-            background: rgba(30, 41, 59, 0.8);
+            background: var(--dark-bg-lighter);
             border-color: var(--dark-accent);
             transform: translateX(-5px);
             box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+            text-decoration: none;
         }
 
         .btn-back-icon {
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             transition: transform 0.3s ease;
         }
 
@@ -176,14 +200,15 @@
         }
 
         .form-header h1 {
-            color: var(--dark-text);
-            font-size: 2.5rem;
-            margin: 0;
+            font-size: 2.2rem;
             font-weight: 700;
+            color: var(--dark-text);
+            margin: 0;
             background: var(--dark-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            letter-spacing: -0.5px;
             text-shadow: 0 2px 10px rgba(102, 126, 234, 0.2);
         }
 
@@ -191,13 +216,13 @@
             background: var(--dark-bg-card);
             padding: 2.5rem;
             border-radius: 16px;
-            box-shadow: 0 20px 40px var(--dark-shadow);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
             border: 1px solid var(--dark-border);
             backdrop-filter: blur(10px);
-            animation: slideUp 0.6s ease-out;
+            animation: fadeInUp 0.5s ease-out forwards;
         }
 
-        @keyframes slideUp {
+        @keyframes fadeInUp {
             from {
                 opacity: 0;
                 transform: translateY(20px);
@@ -210,45 +235,36 @@
 
         .form-group {
             margin-bottom: 1.75rem;
-            animation: fadeIn 0.5s ease-out forwards;
-            animation-delay: calc(var(--order, 0) * 0.1s);
+            position: relative;
         }
 
-        .form-group:nth-child(1) { --order: 1; }
-        .form-group:nth-child(2) { --order: 2; }
-        .form-group:nth-child(3) { --order: 3; }
-        .form-group:nth-child(4) { --order: 4; }
-
         .form-label {
-            display: block;
-            color: var(--dark-text-secondary);
-            font-size: 0.95rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            color: var(--dark-text);
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
         }
 
-        .form-label::after {
-            content: '✱';
+        .form-label::before {
+            content: '•';
             color: var(--dark-accent);
-            font-size: 0.8rem;
+            font-size: 1.2rem;
         }
 
         .form-input {
             width: 100%;
             padding: 1rem 1.25rem;
-            background: rgba(30, 41, 59, 0.7);
+            background: rgba(30, 41, 59, 0.5);
             border: 1px solid var(--dark-border);
             border-radius: 10px;
             color: var(--dark-text);
             font-size: 1rem;
             transition: all 0.3s ease;
             outline: none;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .form-input::placeholder {
@@ -259,33 +275,38 @@
         .form-input:focus {
             border-color: var(--dark-accent);
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-            background: rgba(30, 41, 59, 0.9);
-            transform: translateY(-1px);
+            background: rgba(30, 41, 59, 0.8);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
         }
 
         textarea.form-input {
             resize: vertical;
             min-height: 150px;
-            line-height: 1.6;
             font-family: inherit;
+            line-height: 1.5;
         }
 
-        #rating {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'%3E%3C/polygon%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 1rem center;
-            background-size: 20px;
-            padding-right: 3rem;
+        input[type="file"].form-input {
+            padding: 0.75rem 1.25rem;
+        }
+
+        .form-text {
+            display: block;
+            margin-top: 0.5rem;
+            color: var(--dark-text-secondary);
+            font-size: 0.85rem;
         }
 
         .error-message {
             color: var(--dark-danger);
             font-size: 0.9rem;
             margin-top: 0.5rem;
-            padding: 0.75rem;
-            background: rgba(239, 68, 68, 0.1);
-            border-radius: 8px;
-            border-left: 3px solid var(--dark-danger);
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -296,13 +317,70 @@
             font-size: 0.9rem;
         }
 
+        /* Стили для текущего фото */
+        .current-photo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(30, 41, 59, 0.3);
+            border-radius: 8px;
+            border: 1px solid var(--dark-border);
+        }
+
+        .photo-preview {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid var(--dark-accent);
+        }
+
+        .photo-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            color: var(--dark-text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .photo-name {
+            font-weight: 500;
+            color: var(--dark-text);
+        }
+
+        .checkbox-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--dark-danger);
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .checkbox-label:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: var(--dark-danger);
+        }
+
+        .checkbox-input {
+            width: 1.2rem;
+            height: 1.2rem;
+            accent-color: var(--dark-danger);
+        }
+
         .form-actions {
             display: flex;
             gap: 1rem;
             margin-top: 2.5rem;
             padding-top: 1.5rem;
             border-top: 1px solid var(--dark-border);
-            flex-wrap: wrap;
         }
 
         .btn-submit {
@@ -321,44 +399,12 @@
             gap: 0.75rem;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-            min-width: 180px;
-            text-decoration: none;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-submit::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: 0.5s;
-        }
-
-        .btn-submit:hover::before {
-            left: 100%;
         }
 
         .btn-submit:hover {
-            background: linear-gradient(135deg, var(--dark-accent-hover) 0%, #764ba2 100%);
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-submit:active {
-            transform: translateY(0);
-        }
-
-        .btn-icon {
-            font-size: 1.25rem;
-            transition: transform 0.3s ease;
-        }
-
-        .btn-submit:hover .btn-icon {
-            transform: scale(1.2);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            background: linear-gradient(135deg, var(--dark-accent-hover) 0%, #764ba2 100%);
         }
 
         .btn-cancel {
@@ -369,13 +415,13 @@
             color: var(--dark-text-secondary);
             text-decoration: none;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 500;
             text-align: center;
             transition: all 0.3s ease;
-            min-width: 120px;
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 0.75rem;
         }
 
         .btn-cancel:hover {
@@ -384,6 +430,11 @@
             border-color: var(--dark-border);
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(148, 163, 184, 0.2);
+            text-decoration: none;
+        }
+
+        .btn-icon {
+            font-size: 1.2rem;
         }
 
         @media (max-width: 768px) {
@@ -391,100 +442,22 @@
                 padding: 1rem;
             }
 
-            .article-form {
-                padding: 1.75rem;
-                margin: 0.5rem;
-            }
-
             .form-header h1 {
-                font-size: 2rem;
+                font-size: 1.8rem;
             }
 
-            .form-actions {
-                flex-direction: column;
-                gap: 0.75rem;
-            }
-
-            .btn-submit, .btn-cancel {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .btn-back {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-
-        @media (max-width: 480px) {
             .article-form {
                 padding: 1.5rem;
             }
 
-            .form-header h1 {
-                font-size: 1.75rem;
+            .form-actions {
+                flex-direction: column;
             }
 
-            .form-input {
-                padding: 0.875rem 1rem;
-                font-size: 0.95rem;
+            .current-photo {
+                flex-direction: column;
+                text-align: center;
             }
-
-            .form-label {
-                font-size: 0.9rem;
-            }
-
-            .btn-submit, .btn-cancel {
-                padding: 0.875rem 1.5rem;
-                font-size: 0.95rem;
-            }
-        }
-
-        @keyframes glow {
-            0%, 100% {
-                box-shadow: 0 20px 40px var(--dark-shadow);
-            }
-            50% {
-                box-shadow: 0 20px 40px rgba(59, 130, 246, 0.3);
-            }
-        }
-
-        .article-form {
-            animation: fadeIn 0.6s ease-out, glow 3s ease-in-out 0.6s;
-        }
-
-        #name {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'%3E%3C/path%3E%3Ccircle cx='12' cy='7' r='4'%3E%3C/circle%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 1rem center;
-            background-size: 20px;
-            padding-right: 3rem;
-        }
-
-        #author {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2'%3E%3C/path%3E%3Ccircle cx='9' cy='7' r='4'%3E%3C/circle%3E%3Cpath d='M23 21v-2a4 4 0 0 0-3-3.87'%3E%3C/path%3E%3Cpath d='M16 3.13a4 4 0 0 1 0 7.75'%3E%3C/path%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 1rem center;
-            background-size: 20px;
-            padding-right: 3rem;
-        }
-
-        #description {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'%3E%3C/path%3E%3Cpolyline points='14 2 14 8 20 8'%3E%3C/polyline%3E%3Cline x1='16' y1='13' x2='8' y2='13'%3E%3C/line%3E%3Cline x1='16' y1='17' x2='8' y2='17'%3E%3C/line%3E%3Cpolyline points='10 9 9 9 8 9'%3E%3C/polyline%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 1rem top 1rem;
-            background-size: 20px;
-            padding-right: 3rem;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        .btn-submit:active {
-            animation: pulse 0.3s ease;
         }
     </style>
 @endsection

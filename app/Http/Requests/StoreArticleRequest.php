@@ -26,6 +26,7 @@ class StoreArticleRequest extends FormRequest
             'description' => 'required|string',
             'author' => 'required|string|max:255',
             'rating' => 'required|integer|min:0|max:10',
+            'photo' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:5120'], // 5MB
         ];
     }
 
@@ -43,6 +44,9 @@ class StoreArticleRequest extends FormRequest
             'rating.integer' => 'Рейтинг должен быть целым числом',
             'rating.min' => 'Рейтинг не может быть меньше 0',
             'rating.max' => 'Рейтинг не может быть больше 10',
+            'photo.image' => 'Файл должен быть изображением.',
+            'photo.mimes' => 'Допустимые форматы: jpeg, jpg, png, webp.',
+            'photo.max' => 'Размер изображения не должен превышать 5MB.',
         ];
     }
 }

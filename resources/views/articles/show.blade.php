@@ -25,8 +25,8 @@
                     <span class="rating-label">Рейтинг:</span>
                     <span class="rating-value">{{ $article->rating }}</span>
                     <span class="quality-badge {{ $article->isPopular() ? 'popular' : '' }}">
-                    {{ $article->getQualityLevel() }}
-                </span>
+                        {{ $article->getQualityLevel() }}
+                    </span>
                 </div>
                 <div class="rating-controls">
                     <form action="{{ route('articles.incrementRating', $article) }}"
@@ -46,6 +46,21 @@
                 <h3>Описание:</h3>
                 <p>{{ $article->description }}</p>
             </div>
+
+            {{-- Блок изображения --}}
+            @if($article->mainPhoto)
+                <div class="article-photo-section">
+                    <h3>Изображение:</h3>
+                    <div class="photo-gallery">
+                        <a href="{{ $article->mainPhoto->detail_url }}" target="_blank" class="photo-link">
+                            <img src="{{ $article->mainPhoto->thumbnail_url }}"
+                                 alt="{{ $article->title }}"
+                                 class="article-photo">
+                        </a>
+                        <p class="photo-caption">{{ $article->mainPhoto->original_name }}</p>
+                    </div>
+                </div>
+            @endif
 
             <div class="article-actions">
                 <a href="{{ route('articles.edit', $article) }}" class="btn-action btn-edit">
@@ -371,6 +386,64 @@
             border-left: 3px solid var(--dark-accent);
         }
 
+        /* Стили для блока фото */
+        .article-photo-section {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--dark-border);
+        }
+
+        .article-photo-section h3 {
+            color: var(--dark-text);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .article-photo-section h3::before {
+            content: '🖼️';
+            font-size: 1.2rem;
+        }
+
+        .photo-gallery {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .photo-link {
+            display: inline-block;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid var(--dark-border);
+            transition: all 0.3s ease;
+            max-width: 100%;
+        }
+
+        .photo-link:hover {
+            border-color: var(--dark-accent);
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .article-photo {
+            max-width: 100%;
+            max-height: 500px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .photo-caption {
+            color: var(--dark-text-secondary);
+            font-size: 0.95rem;
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+
         .article-actions {
             display: flex;
             gap: 1rem;
@@ -429,7 +502,10 @@
             font-size: 1.2rem;
         }
 
-        //.*$
+        form {
+            margin: 0;
+        }
+
         @media (max-width: 768px) {
             .article-container {
                 padding: 1rem;
@@ -503,7 +579,6 @@
             }
         }
 
-
         @keyframes pulseRating {
             0% { transform: scale(1); }
             50% { transform: scale(1.1); }
@@ -514,7 +589,6 @@
             animation: pulseRating 0.2s ease;
         }
 
-        /* Стили для фона страницы */
         .article-container::before {
             content: '';
             position: fixed;
@@ -527,11 +601,6 @@
                 radial-gradient(circle at 80% 20%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
                 radial-gradient(circle at 40% 40%, rgba(118, 75, 162, 0.05) 0%, transparent 50%);
             z-index: -1;
-        }
-
-        /* Стили для форм в действиях */
-        form {
-            margin: 0;
         }
     </style>
 @endsection

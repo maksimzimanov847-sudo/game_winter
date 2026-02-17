@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Article extends Model
 {
@@ -126,4 +128,49 @@ public function reviews(): HasMany
 {
     return $this->hasMany(Review::class);
 }
+
+    /**
+     * Получить все фотографии услуги.
+     */
+    public function photos(): MorphMany
+    {
+        return $this->morphMany(Photo::class, 'photoable')->orderBy('order');
+    }
+
+    /**
+     * Получить главную фотографию услуги (первую по порядку).
+     */
+    public function mainPhoto(): MorphOne
+    {
+        return $this->morphOne(Photo::class, 'photoable')->orderBy('order');
+    }
+
+    /**
+     * Получить URL миниатюры главной фотографии.
+     */
+    public function getThumbnailUrlAttribute(): ?string
+    {
+        return $this->mainPhoto?->thumbnail_url;
+    }
+
+    /**
+     * Получить URL детальной версии главной фотографии.
+     */
+    public function getDetailImageUrlAttribute(): ?string
+    {
+        return $this->mainPhoto?->detail_url;
+    }
+
+    /**
+     * События модели.
+     */
+    protected static function booted(): void
+    {
+        static::deleting(function (Article $article) {
+            // При удалении услуги удаляем все связанные фото (файлы и записи)
+            $article->photos()->each(function (Photo $photo) {
+                $photo->delete();
+            });
+        });
+    }
 }

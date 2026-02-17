@@ -3,6 +3,9 @@
 namespace Database\Factories;
 
 use App\Models\Review;
+use App\Models\User;
+use App\Models\Article;
+
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ReviewFactory extends Factory
@@ -12,96 +15,118 @@ class ReviewFactory extends Factory
     public function definition(): array
     {
         return [
-            'title' => $this->faker->sentence(),
-            'comment' => $this->faker->paragraphs(3, true),
-            'author' => $this->faker->name(),
-            'rating' => $this->faker->numberBetween(1, 5),
+            'user_id'    => User::factory(),
+            'article_id' =>  Article::factory(),
+            'rating'     => $this->faker->numberBetween(1, 5),
+            'comment'    => $this->faker->paragraphs(3, true),
             'created_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
             'updated_at' => now(),
         ];
     }
 
-    public function positive(): Factory
+    /**
+     * Привязать к существующему пользователю.
+     */
+    public function forUser(User $user): static
     {
-        return $this->state(function (array $attributes) {
-            return [
-                'rating' => $this->faker->numberBetween(4, 5),
-            ];
-        });
+        return $this->state(fn (array $attributes) => [
+            'user_id' => $user->id,
+        ]);
     }
 
-    public function negative(): Factory
+    /**
+     * Привязать к существующей статье.
+     */
+    public function forArticle(Article $article): static
     {
-        return $this->state(function (array $attributes) {
-            return [
-                'rating' => $this->faker->numberBetween(1, 2),
-            ];
-        });
+        return $this->state(fn (array $attributes) => [
+            'article_id' => $article->id,
+        ]);
     }
 
-    public function neutral(): Factory
+    /**
+     * Положительный отзыв (4–5).
+     */
+    public function positive(): static
     {
-        return $this->state(function (array $attributes) {
-            return [
-                'rating' => 3,
-            ];
-        });
+        return $this->state(fn (array $attributes) => [
+            'rating' => $this->faker->numberBetween(4, 5),
+        ]);
     }
 
-    public function highRated(): Factory
+    /**
+     * Отрицательный отзыв (1–2).
+     */
+    public function negative(): static
     {
-        return $this->positive();
+        return $this->state(fn (array $attributes) => [
+            'rating' => $this->faker->numberBetween(1, 2),
+        ]);
     }
 
-    public function lowRated(): Factory
+    /**
+     * Нейтральный отзыв (3).
+     */
+    public function neutral(): static
     {
-        return $this->negative();
+        return $this->state(fn (array $attributes) => [
+            'rating' => 3,
+        ]);
     }
 
-    public function old(): Factory
+    // Алиасы
+    public function highRated(): static { return $this->positive(); }
+    public function lowRated(): static  { return $this->negative(); }
+
+    /**
+     * Старый отзыв (более 6 месяцев назад).
+     */
+    public function old(): static
     {
-        return $this->state(function (array $attributes) {
-            return [
-                'created_at' => $this->faker->dateTimeBetween('-2 years', '-6 months'),
-                'updated_at' => $this->faker->dateTimeBetween('-2 years', '-6 months'),
-            ];
-        });
+        return $this->state(fn (array $attributes) => [
+            'created_at' => $this->faker->dateTimeBetween('-2 years', '-6 months'),
+            'updated_at' => $this->faker->dateTimeBetween('-2 years', '-6 months'),
+        ]);
     }
 
-    public function recent(): Factory
+    /**
+     * Недавний отзыв (менее месяца).
+     */
+    public function recent(): static
     {
-        return $this->state(function (array $attributes) {
-            return [
-                'created_at' => $this->faker->dateTimeBetween('-1 month', 'now'),
-                'updated_at' => $this->faker->dateTimeBetween('-1 month', 'now'),
-            ];
-        });
+        return $this->state(fn (array $attributes) => [
+            'created_at' => $this->faker->dateTimeBetween('-1 month', 'now'),
+            'updated_at' => $this->faker->dateTimeBetween('-1 month', 'now'),
+        ]);
     }
 
-    public function withLongComment(): Factory
+    /**
+     * Длинный комментарий.
+     */
+    public function withLongComment(): static
     {
-        return $this->state(function (array $attributes) {
-            return [
-                'comment' => $this->faker->paragraphs(10, true),
-            ];
-        });
+        return $this->state(fn (array $attributes) => [
+            'comment' => $this->faker->paragraphs(10, true),
+        ]);
     }
 
-    public function withShortComment(): Factory
+    /**
+     * Короткий комментарий.
+     */
+    public function withShortComment(): static
     {
-        return $this->state(function (array $attributes) {
-            return [
-                'comment' => $this->faker->sentence(),
-            ];
-        });
+        return $this->state(fn (array $attributes) => [
+            'comment' => $this->faker->sentence(),
+        ]);
     }
 
-    public function deleted(): Factory
+    /**
+     * «Удалённый» отзыв (мягкое удаление).
+     */
+    public function deleted(): static
     {
-        return $this->state(function (array $attributes) {
-            return [
-                'deleted_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
-            ];
-        });
+        return $this->state(fn (array $attributes) => [
+            'deleted_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
+        ]);
     }
 }

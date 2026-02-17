@@ -12,7 +12,7 @@
             <h1>Создание новой статьи</h1>
         </div>
 
-        <form method="POST" action="{{ route('articles.store') }}" class="article-form">
+        <form method="POST" action="{{ route('articles.store') }}" class="article-form" enctype="multipart/form-data">
             @csrf
 
             <div class="form-group">
@@ -24,7 +24,7 @@
                        name="title"
                        placeholder="Введите название статьи"
                        required
-                       maxlength="15000">
+                       maxlength="150">
                 @error('title')
                 <span class="error-message">{{ $message }}</span>
                 @enderror
@@ -70,6 +70,20 @@
                           rows="6"
                           required>{{ old('description') }}</textarea>
                 @error('description')
+                <span class="error-message">{{ $message }}</span>
+                @enderror
+            </div>
+
+            {{-- Поле для загрузки изображения --}}
+            <div class="form-group">
+                <label for="photo" class="form-label">Изображение (необязательно)</label>
+                <input type="file"
+                       class="form-input"
+                       id="photo"
+                       name="photo"
+                       accept="image/jpeg,image/png,image/webp">
+                <small class="form-text text-gray-400">Допустимые форматы: jpeg, jpg, png, webp. Максимальный размер: 5 МБ.</small>
+                @error('photo')
                 <span class="error-message">{{ $message }}</span>
                 @enderror
             </div>
@@ -257,20 +271,15 @@
             line-height: 1.5;
         }
 
-        select.form-input {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 1rem center;
-            background-size: 1.25rem;
-            padding-right: 2.5rem;
-            cursor: pointer;
+        input[type="file"].form-input {
+            padding: 0.75rem 1.25rem;
         }
 
-        select.form-input option {
-            background: var(--dark-bg-card);
-            color: var(--dark-text);
-            padding: 0.75rem;
+        .form-text {
+            display: block;
+            margin-top: 0.5rem;
+            color: var(--dark-text-secondary);
+            font-size: 0.85rem;
         }
 
         .error-message {
@@ -349,38 +358,9 @@
             font-size: 1.2rem;
         }
 
-        /* Стили для звездного рейтинга в опциях */
-        .star-options {
-            display: flex;
-            gap: 0.25rem;
-            margin-top: 0.25rem;
-        }
-
-        .star-option {
-            color: var(--dark-warning);
-            font-size: 1.2rem;
-        }
-
-        /* Индикатор валидации */
-        .form-input:valid {
-            border-color: rgba(16, 185, 129, 0.3);
-            background: rgba(16, 185, 129, 0.05);
-        }
-
-        .form-input:invalid:not(:placeholder-shown) {
-            border-color: rgba(239, 68, 68, 0.3);
-            background: rgba(239, 68, 68, 0.05);
-        }
-
-        //.*$
         @media (max-width: 768px) {
             .form-container {
                 padding: 1rem;
-                margin: 1rem auto;
-            }
-
-            .form-header {
-                margin-bottom: 2rem;
             }
 
             .form-header h1 {
@@ -394,64 +374,6 @@
             .form-actions {
                 flex-direction: column;
             }
-
-            .btn-submit,
-            .btn-cancel {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .btn-back {
-                padding: 0.75rem 1rem;
-                font-size: 0.95rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .article-form {
-                padding: 1.25rem;
-                border-radius: 12px;
-            }
-
-            .form-header h1 {
-                font-size: 1.5rem;
-            }
-
-            .form-input {
-                padding: 0.875rem 1rem;
-                font-size: 0.95rem;
-            }
-
-            .btn-submit,
-            .btn-cancel {
-                padding: 0.875rem 1.5rem;
-                font-size: 0.95rem;
-            }
-        }
-
-        /* Дополнительные эффекты при наведении на группу */
-        .form-group:hover .form-label {
-            color: var(--dark-accent);
-        }
-
-        .form-group:hover .form-label::before {
-            color: var(--dark-success);
-        }
-
-        /* Стили для фона страницы */
-        body.bg-gray-50::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background:
-                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(118, 75, 162, 0.05) 0%, transparent 50%);
-            z-index: -1;
         }
     </style>
-
 @endsection
