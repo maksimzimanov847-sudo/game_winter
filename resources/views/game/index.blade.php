@@ -3,11 +3,11 @@
 @section('title', 'Game zone — Статьи')
 
 @section('content')
-
-    <div class=" card mb-8 fade-in">
+    {{-- Hero секция --}}
+    <div class="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 text-white rounded-2xl mb-12 overflow-hidden shadow-xl">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div class="text-center">
-                <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                     Добро пожаловать в <span class="text-blue-200">Game zone</span>!
                 </h1>
                 <p class="text-xl md:text-2xl text-blue-100 mb-10 max-w-3xl mx-auto leading-relaxed">
@@ -80,11 +80,19 @@
                     </a>
                 </div>
 
+                {{-- Отображение главного фото статьи --}}
+                @if($article->mainPhoto)
+                    <div class="article-image mb-4">
+                        <img src="{{ $article->mainPhoto->thumbnail_url }}"
+                             alt="{{ $article->title }}"
+                             class="rounded-lg w-full object-cover"
+                             style="max-height: 300px;">
+                    </div>
+                @endif
 
                 <p class="text-gray-300 mb-6 line-clamp-3">
                     {{ $article->description }}
                 </p>
-
 
                 <div class="border-t border-gray-700 pt-5 mt-2">
                     <div class="flex items-center justify-between mb-4">
@@ -96,26 +104,26 @@
                         </h4>
                     </div>
 
-                    {
+                    {{-- Список отзывов --}}
                     <div class="space-y-4 mb-6">
-                        @forelse($article->reviews->take(3) as $review) {{-- показываем 3 последних --}}
-                        <div class="bg-gray-800/30 rounded-lg p-4 border-l-4 border-blue-500">
-                            <div class="flex items-center justify-between mb-2">
-                                <div class="flex items-center gap-2">
-                                    <span class="font-medium text-white">{{ $review->user->name }}</span>
-                                    <span class="text-sm text-gray-400">·</span>
-                                    <div class="flex items-center gap-1">
-                                        @for($i = 1; $i <= 5; $i++)
-                                            <svg class="w-4 h-4 {{ $i <= $review->rating ? 'text-yellow-400' : 'text-gray-600' }}" fill="currentColor" viewBox="0 0 20 20">
-                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                                            </svg>
-                                        @endfor
+                        @forelse($article->reviews->take(3) as $review)
+                            <div class="bg-gray-800/30 rounded-lg p-4 border-l-4 border-blue-500">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-medium text-white">{{ $review->user->name }}</span>
+                                        <span class="text-sm text-gray-400">·</span>
+                                        <div class="flex items-center gap-1">
+                                            @for($i = 1; $i <= 5; $i++)
+                                                <svg class="w-4 h-4 {{ $i <= $review->rating ? 'text-yellow-400' : 'text-gray-600' }}" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                                </svg>
+                                            @endfor
+                                        </div>
                                     </div>
+                                    <span class="text-xs text-gray-500">{{ $review->created_at->diffForHumans() }}</span>
                                 </div>
-                                <span class="text-xs text-gray-500">{{ $review->created_at->diffForHumans() }}</span>
+                                <p class="text-gray-300 text-sm">{{ $review->comment ?: 'Пользователь не оставил комментарий.' }}</p>
                             </div>
-                            <p class="text-gray-300 text-sm">{{ $review->comment ?: 'Пользователь не оставил комментарий.' }}</p>
-                        </div>
                         @empty
                             <p class="text-gray-500 italic text-sm">Пока нет отзывов. Будьте первым!</p>
                         @endforelse
@@ -130,7 +138,7 @@
                         @endif
                     </div>
 
-
+                    {{-- Форма добавления отзыва --}}
                     @auth
                         @if(!isset($userReviewMap[$article->id]))
                             <div class="bg-gray-800/50 rounded-lg p-5 border border-gray-700">
@@ -198,113 +206,176 @@
                 @endcan
             </div>
         @endforelse
+    </div>
 
-
-            </div>
-<style>/* ===== Тёмная тема для проекта ===== */
-    :root {
-        --dark-bg: #0f172a;
-        --dark-bg-lighter: #1e293b;
-        --dark-bg-card: #162032;
-        --dark-border: #2d3748;
-        --dark-text: #e2e8f0;
-        --dark-text-secondary: #94a3b8;
-        --dark-accent: #3b82f6;
-        --dark-accent-hover: #2563eb;
-        --dark-danger: #ef4444;
-        --dark-danger-hover: #dc2626;
-        --dark-warning: #f59e0b;
-        --dark-success: #10b981;
-        --dark-success-hover: #059669;
-        --dark-shadow: rgba(0, 0, 0, 0.3);
-        --dark-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        --dark-overlay: rgba(15, 23, 42, 0.95);
-    }
-
-    /* Базовые стили */
-    body {
-        background: var(--dark-bg);
-        color: var(--dark-text);
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-        min-height: 100vh;
-        margin: 0;
-        padding: 0;
-        position: relative;
-        line-height: 1.5;
-    }
-
-    body::before {
-        content: '';
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background:
-            radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 80% 20%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 40% 40%, rgba(118, 75, 162, 0.05) 0%, transparent 50%);
-        z-index: -1;
-        pointer-events: none;
-    }
-
-    /* Контейнер */
-    .container-custom {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 2rem 1rem;
-    }
-
-    /* Анимации */
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
+    <style>
+        /* ===== Тёмная тема для проекта ===== */
+        :root {
+            --dark-bg: #0f172a;
+            --dark-bg-lighter: #1e293b;
+            --dark-bg-card: #162032;
+            --dark-border: #2d3748;
+            --dark-text: #e2e8f0;
+            --dark-text-secondary: #94a3b8;
+            --dark-accent: #3b82f6;
+            --dark-accent-hover: #2563eb;
+            --dark-danger: #ef4444;
+            --dark-danger-hover: #dc2626;
+            --dark-warning: #f59e0b;
+            --dark-success: #10b981;
+            --dark-success-hover: #059669;
+            --dark-shadow: rgba(0, 0, 0, 0.3);
+            --dark-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --dark-overlay: rgba(15, 23, 42, 0.95);
         }
-        to {
-            opacity: 1;
-            transform: translateY(0);
+
+        body {
+            background: var(--dark-bg);
+            color: var(--dark-text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            position: relative;
+            line-height: 1.5;
         }
-    }
 
-    .fade-in {
-        animation: fadeInUp 0.5s ease-out forwards;
-    }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(118, 75, 162, 0.05) 0%, transparent 50%);
+            z-index: -1;
+            pointer-events: none;
+        }
 
-    /* Карточка */
-    .card {
-        background: var(--dark-bg-card);
-        border: 1px solid var(--dark-border);
-        border-radius: 1rem;
-        padding: 1.5rem;
-        box-shadow: 0 20px 40px var(--dark-shadow);
-        backdrop-filter: blur(10px);
-        transition: all 0.3s ease;
-    }
+        .container-custom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
 
-    .card:hover {
-        border-color: var(--dark-accent);
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-        transform: translateY(-2px);
-    }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-    /* Кнопки */
-    .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.75rem;
-        font-weight: 600;
-        font-size: 0.95rem;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        border: none;
-        text-decoration: none;
-        white-space: nowrap;
-    }
+        .fade-in {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
 
+        .card {
+            background: var(--dark-bg-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 20px 40px var(--dark-shadow);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--dark-accent);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--dark-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(148, 163, 184, 0.15);
+            color: var(--dark-text-secondary);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(148, 163, 184, 0.25);
+            color: var(--dark-text);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(148, 163, 184, 0.2);
+        }
+
+        /* Стили для изображения статьи */
+        .article-image {
+            overflow: hidden;
+            border-radius: 0.75rem;
+            border: 1px solid var(--dark-border);
+            transition: all 0.3s ease;
+        }
+
+        .article-image img {
+            width: 100%;
+            height: auto;
+            max-height: 300px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .article-image:hover img {
+            transform: scale(1.02);
+        }
+
+        /* Остальные стили (для форм, рейтинга и т.д.) можно оставить как есть или дополнить */
+        .form-label {
+            display: block;
+            color: var(--dark-text);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--dark-border);
+            border-radius: 0.5rem;
+            color: var(--dark-text);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--dark-accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+    </style>
+@endsection
     .btn-primary {
         background: var(--dark-gradient);
         color: white;
