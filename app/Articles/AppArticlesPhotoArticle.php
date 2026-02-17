@@ -16,7 +16,7 @@ class AppArticlesPhotoArticle
     public const DETAIL_HEIGHT = 600;
 
     /**
-
+     * Загружает фото для модели и создаёт три версии.
      *
      * @param UploadedFile $file
      * @param Model $model
@@ -46,7 +46,10 @@ class AppArticlesPhotoArticle
     }
 
     /**
-
+     * Удаляет запись о фото (файлы удаляются автоматически через событие модели).
+     *
+     * @param Photo $photo
+     * @return bool
      */
     public function deletePhoto(Photo $photo): bool
     {
@@ -54,7 +57,10 @@ class AppArticlesPhotoArticle
     }
 
     /**
-
+     * Формирует директорию хранения на основе модели.
+     *
+     * @param Model $model
+     * @return string
      */
     protected function getStorageDirectory(Model $model): string
     {
@@ -63,7 +69,12 @@ class AppArticlesPhotoArticle
     }
 
     /**
-
+     * Генерирует пути для трёх версий изображения.
+     *
+     * @param string $directory
+     * @param string $filename
+     * @param string $extension
+     * @return array
      */
     protected function generateFilePaths(string $directory, string $filename, string $extension): array
     {
@@ -75,7 +86,11 @@ class AppArticlesPhotoArticle
     }
 
     /**
-
+     * Сохраняет оригинал и создаёт копии для thumbnail и detail.
+     *
+     * @param UploadedFile $file
+     * @param array $paths
+     * @return void
      */
     protected function processAndSaveImages(UploadedFile $file, array $paths): void
     {
