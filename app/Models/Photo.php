@@ -43,7 +43,7 @@ class Photo extends Model
     protected static function booted(): void
     {
         static::deleting(function (Photo $photo) {
-            Storage::delete((string)[
+            Storage::delete([
                 $photo->original_path,
                 $photo->thumbnail_path,
                 $photo->detail_path,

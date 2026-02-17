@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Articles\AppArticlesPhotoArticle;
 use App\Http\Requests\StoreArticleRequest;
 use App\Http\Requests\UpdateArticleRequest;
 use App\Models\Article;
-use App\Services\PhotoService;
+
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -31,7 +32,7 @@ class ArticlerticleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreArticleRequest $request, PhotoService $photoService): RedirectResponse
+    public function store(StoreArticleRequest $request, AppArticlesPhotoArticle $photoService): RedirectResponse
     {
         $article = Article::create($request->validated());
 
@@ -64,7 +65,7 @@ class ArticlerticleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateArticleRequest $request, Article $article, PhotoService $photoService): RedirectResponse
+    public function update(UpdateArticleRequest $request, Article $article, AppArticlesPhotoArticle $photoArticle): RedirectResponse
     {
         $article->update($request->validated());
 
@@ -72,7 +73,7 @@ class ArticlerticleController extends Controller
         if ($request->input('delete_photo')) {
             $mainPhoto = $article->mainPhoto;
             if ($mainPhoto) {
-                $photoService->deletePhoto($mainPhoto);
+                $photoArticle->deletePhoto($mainPhoto);
             }
         }
 
@@ -81,10 +82,10 @@ class ArticlerticleController extends Controller
             // Удаляем старое главное фото, если есть
             $mainPhoto = $article->mainPhoto;
             if ($mainPhoto) {
-                $photoService->deletePhoto($mainPhoto);
+                $photoArticle->deletePhoto($mainPhoto);
             }
 
-            $photoService->uploadPhoto($request->file('photo'), $article, order: 0);
+            $photoArticle->uploadPhoto($request->file('photo'), $article, order: 0);
         }
 
         return redirect()->route('articles.show', $article)
