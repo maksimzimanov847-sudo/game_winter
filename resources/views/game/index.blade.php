@@ -35,7 +35,6 @@
             </div>
         </div>
     </div>
-
     {{-- Список статей --}}
     <div class="container-custom">
         <div class="flex justify-between items-center mb-8 pb-6 border-b border-gray-700">
@@ -46,7 +45,10 @@
                 Все статьи →
             </a>
         </div>
-
+        <a href="{{ route('articles.create') }}" class="btn-add">
+            <span class="btn-add-icon">+</span>
+            Добавить статью
+        </a>
         @forelse($articles as $article)
             <div class="card mb-8 fade-in">
                 <div class="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-4">
@@ -373,6 +375,24 @@
             outline: none;
             border-color: var(--dark-accent);
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+        .btn-add{
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            white-space: nowrap;
+            background: var(--dark-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
     </style>
 @endsection
