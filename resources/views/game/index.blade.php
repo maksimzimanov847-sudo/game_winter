@@ -14,13 +14,16 @@
                     Читайте свежие статьи, обзоры, гайды и оставляйте свои отзывы
                 </p>
                 <div class="max-w-2xl mx-auto">
-                    <div class="relative group">
+                    <form action="{{ route('articles.search') }}" method="GET" class="relative group">
                         <input
                             type="text"
+                            name="query"
+                            value="{{ request('query') }}"
                             placeholder="Поиск статей по названию или автору…"
                             class="w-full px-6 py-4 rounded-xl text-gray-900 focus:outline-none focus:ring-4 focus:ring-blue-300 focus:ring-opacity-50 shadow-lg transition duration-300"
                         >
                         <button
+                            type="submit"
                             class="absolute right-3 top-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-2.5 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                         >
                             <div class="flex items-center">
@@ -30,12 +33,7 @@
                                 Найти
                             </div>
                         </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    {{-- Список статей --}}
+                    </form>
     <div class="container-custom">
         <div class="flex justify-between items-center mb-8 pb-6 border-b border-gray-700">
             <h2 class="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">

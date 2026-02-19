@@ -6,7 +6,7 @@ use App\Articles\AppArticlesPhotoArticle;
 use App\Http\Requests\StoreArticleRequest;
 use App\Http\Requests\UpdateArticleRequest;
 use App\Models\Article;
-
+use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -119,4 +119,27 @@ class ArticlerticleController extends Controller
         $article->decrementRating();
         return back()->with('success', 'Рейтинг уменьшен!');
     }
+
+
+    public function search(Request $request)
+    {
+        // Санитизация входных данных
+        $query = strip_tags(trim($request->input('query'))); // удаляем HTML-теги и лишние пробелы
+
+        // Если запрос пустой, просто показываем все статьи (или можно вернуть ошибку)
+        if (empty($query)) {
+            return redirect()->route('articles.index');
+        }
+
+        // Поиск по названию, автору и описанию (регистронезависимый)
+        $articles = Article::where('title', 'LIKE', "%{$query}%")
+            ->orWhere('author', 'LIKE', "%{$query}%")
+            ->orWhere('description', 'LIKE', "%{$query}%")
+            ->latest()
+            ->paginate(10);
+
+        // Возвращаем представление со списком найденных статей
+        return view('articles.index', compact('articles', 'query'));
+    }
+
 }

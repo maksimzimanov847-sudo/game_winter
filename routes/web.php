@@ -16,6 +16,7 @@ use App\Http\Controllers\ReviewsController;
 
 Route::get('/dashboard', function () {
     return view('dashboard');
+
 })->middleware(['auth', 'verified'])->name('dashboard');
 Route::get('/', [GameController::class, 'index'])->name('game.index');
 Route::post('/articles/{article}/increment-rating', [ArticlerticleController::class, 'incrementRating'])
@@ -26,6 +27,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('users', UserController::class);
 
     Route::get('/game', [AboutController::class, 'index'])->name('about');
+    Route::get('/articles/search', [App\Http\Controllers\ArticlerticleController::class, 'search'])->name('articles.search');
     Route::resource('articles',ArticlerticleController::class);
     Route::resource('reviews', ReviewsController::class);
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
