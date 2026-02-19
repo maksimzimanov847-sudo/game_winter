@@ -171,9 +171,8 @@
         }
     </style>
 
-    {{-- Контент страницы "О нас" --}}
+
     <div class="container-custom">
-        {{-- Заголовок страницы --}}
         <div class="text-center mb-12">
             <h1 class="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                 О нас
@@ -289,13 +288,13 @@
             </h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div class="text-center">
-                    <img src="https://via.placeholder.com/150" alt="Зиманов" class="w-24 h-24 rounded-full mx-auto mb-3 border-2 border-blue-500">
+                    <img src="/app/t/2.jpg" alt="Зиманов" class="w-24 h-24 rounded-full mx-auto mb-3 border-2 border-blue-500">
                     <h3 class="text-lg font-semibold text-white">Зиманов Максим
                     </h3>
                     <p class="text-sm text-gray-400">Основатель, главный редактор</p>
                 </div>
                 <div class="text-center">
-                    <img src="../views/t/1.jpg" alt="Мария" class="w-24 h-24 rounded-full mx-auto mb-3 border-2 border-blue-500">
+                    <img src="/app/t/1.jpg" alt="Мария" class="w-24 h-24 rounded-full mx-auto mb-3 border-2 border-blue-500">
                     <h3 class="text-lg font-semibold text-white">Мария Петрова</h3>
                     <p class="text-sm text-gray-400">Автор статей, обозреватель</p>
                 </div>

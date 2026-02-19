@@ -99,8 +99,5 @@
                 @endauth
             </div>
         @endforelse
-
-            </div>
-
-    </div>
+        
 @endsection

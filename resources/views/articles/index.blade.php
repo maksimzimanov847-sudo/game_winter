@@ -106,7 +106,13 @@
             </table>
         </div>
     </div>
-
+    @if($articles->hasPages())
+        <div class="mt-12 flex justify-center">
+            <nav class="flex items-center space-x-2">
+                {{ $articles->links() }}
+            </nav>
+        </div>
+    @endif
     <style>
         :root {
             --dark-bg: #0f172a;
