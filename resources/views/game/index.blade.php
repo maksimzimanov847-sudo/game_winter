@@ -13,6 +13,8 @@
                 <p class="text-xl md:text-2xl text-blue-100 mb-10 max-w-3xl mx-auto leading-relaxed">
                     Читайте свежие статьи, обзоры, гайды и оставляйте свои отзывы
                 </p>
+
+                {{-- Поиск --}}
                 <div class="max-w-2xl mx-auto">
                     <form action="{{ route('articles.search') }}" method="GET" class="relative group">
                         <input
@@ -34,19 +36,29 @@
                             </div>
                         </button>
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Список статей --}}
     <div class="container-custom">
-        <div class="flex justify-between items-center mb-8 pb-6 border-b border-gray-700">
+        {{-- Заголовок и действия --}}
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 pb-6 border-b border-gray-700">
             <h2 class="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                 Последние статьи
             </h2>
-            <a href="{{ route('articles.index') }}" class="btn btn-secondary">
-                Все статьи →
-            </a>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <a href="{{ route('articles.create') }}" class="btn-add">
+                    <span class="btn-add-icon">+</span>
+                    Добавить статью
+                </a>
+                <a href="{{ route('articles.index') }}" class="btn btn-secondary">
+                    Все статьи →
+                </a>
+            </div>
         </div>
-        <a href="{{ route('articles.create') }}" class="btn-add">
-            <span class="btn-add-icon">+</span>
-            Добавить статью
-        </a>
+
         @forelse($articles as $article)
             <div class="card mb-8 fade-in">
                 <div class="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-4">
@@ -75,7 +87,7 @@
                             </span>
                         </div>
                     </div>
-                    <a href="{{ route('articles.show', $article) }}" class="btn btn-primary text-sm py-2 px-5">
+                    <a href="{{ route('articles.show', $article) }}" class="btn btn-primary text-sm py-2 px-5 self-start md:self-center">
                         Читать статью
                     </a>
                 </div>
@@ -206,14 +218,14 @@
                 @endcan
             </div>
         @endforelse
-    </div>
-    @if($articles->hasPages())
-        <div class="mt-12 flex justify-center">
-            <nav class="flex items-center space-x-2">
+
+        {{-- Пагинация --}}
+        @if($articles->hasPages())
+            <div class="mt-12 flex justify-center">
                 {{ $articles->links() }}
-            </nav>
-        </div>
-    @endif
+            </div>
+        @endif
+    </div>
 
     <style>
         /* ===== Тёмная тема для проекта ===== */
@@ -299,7 +311,7 @@
             transform: translateY(-2px);
         }
 
-        .btn {
+        .btn, .btn-add {
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -315,13 +327,13 @@
             white-space: nowrap;
         }
 
-        .btn-primary {
+        .btn-primary, .btn-add {
             background: var(--dark-gradient);
             color: white;
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
 
-        .btn-primary:hover {
+        .btn-primary:hover, .btn-add:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
         }
@@ -339,7 +351,6 @@
             box-shadow: 0 4px 12px rgba(148, 163, 184, 0.2);
         }
 
-        /* Стили для изображения статьи */
         .article-image {
             overflow: hidden;
             border-radius: 0.75rem;
@@ -359,7 +370,6 @@
             transform: scale(1.02);
         }
 
-        /* Остальные стили (для форм, рейтинга и т.д.) можно оставить как есть или дополнить */
         .form-label {
             display: block;
             color: var(--dark-text);
@@ -381,23 +391,19 @@
             border-color: var(--dark-accent);
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
         }
-        .btn-add{
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.75rem;
-            font-weight: 600;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            border: none;
-            text-decoration: none;
-            white-space: nowrap;
-            background: var(--dark-gradient);
-            color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+
+        /* Адаптивность */
+        @media (max-width: 640px) {
+            .btn, .btn-add {
+                width: 100%;
+                padding: 0.75rem 1rem;
+            }
+            .flex-col.sm\:flex-row {
+                flex-direction: column;
+            }
+            .self-start.md\:self-center {
+                align-self: flex-start;
+            }
         }
     </style>
 @endsection

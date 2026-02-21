@@ -3,9 +3,7 @@
 @section('title', 'О нас — Game zone')
 
 @section('content')
-
     <style>
-
         :root {
             --dark-bg: #0f172a;
             --dark-bg-lighter: #1e293b;
@@ -169,8 +167,54 @@
             border-color: var(--dark-accent);
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
         }
-    </style>
 
+        /* ===== Адаптивные стили ===== */
+        @media (max-width: 768px) {
+            .container-custom {
+                padding: 1rem;
+            }
+            .card {
+                padding: 1.25rem;
+            }
+            h1.text-4xl {
+                font-size: 2rem;
+            }
+            .text-xl {
+                font-size: 1rem;
+            }
+            .grid-cols-1.md\:grid-cols-2 {
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-4 {
+                gap: 1rem;
+            }
+            .w-16.h-16 {
+                width: 3rem;
+                height: 3rem;
+            }
+            .w-8.h-8 {
+                width: 1.5rem;
+                height: 1.5rem;
+            }
+            .btn-primary.px-8.py-3 {
+                width: 100%;
+                padding: 0.75rem 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .flex.items-center.gap-4 {
+                flex-direction: column;
+                text-align: center;
+            }
+            .flex.items-center.gap-4 .w-12.h-12 {
+                margin-bottom: 0.5rem;
+            }
+        }
+    </style>
 
     <div class="container-custom">
         <div class="text-center mb-12">
@@ -182,9 +226,7 @@
             </p>
         </div>
 
-
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-
             <div class="card fade-in">
                 <div class="flex items-center gap-4 mb-4">
                     <div class="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
@@ -198,7 +240,6 @@
                     Мы создаём платформу, где каждый геймер может найти полезные материалы, обсудить любимые игры и открыть для себя что-то новое. Мы верим, что игры объединяют людей, и хотим сделать это общение максимально комфортным и интересным.
                 </p>
             </div>
-
 
             <div class="card fade-in">
                 <div class="flex items-center gap-4 mb-4">
@@ -229,7 +270,6 @@
                 </ul>
             </div>
         </div>
-
 
         <div class="card fade-in mb-12">
             <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
@@ -277,9 +317,6 @@
                 </div>
             </div>
         </div>
-
-
-
 
         <div class="text-center">
             <a href="{{ route('game.index') }}" class="btn btn-primary px-8 py-3">

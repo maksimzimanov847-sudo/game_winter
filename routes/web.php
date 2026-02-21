@@ -6,7 +6,7 @@ use App\Http\Controllers\GameController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\VideoGuideController;
 use App\Http\Controllers\ReviewsController;
 
 
@@ -25,7 +25,6 @@ Route::post('/articles/{article}/decrement-rating', [ArticlerticleController::cl
     ->name('articles.decrementRating');
 Route::middleware('auth')->group(function () {
     Route::resource('users', UserController::class);
-
     Route::get('/game', [AboutController::class, 'index'])->name('about');
     Route::get('/articles/search', [App\Http\Controllers\ArticlerticleController::class, 'search'])->name('articles.search');
     Route::resource('articles',ArticlerticleController::class);

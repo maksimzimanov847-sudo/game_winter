@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Article;
 use App\Models\Review;
 use App\Models\User;
+use App\Models\VideoGuide;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -20,6 +21,7 @@ class DatabaseSeeder extends Seeder
          User::factory(10)->create();
         Article::factory(10)->create();
         Review::factory(10)->create();
+
 
 
 
